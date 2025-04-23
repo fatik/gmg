@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Morning Image Generator</title>
+    <!-- Preload Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Libre+Baskerville:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600&family=Whisper&family=Zilla+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq Kasheeda';
+            src: url('Jameel Noori Nastaleeq Kasheeda.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #00ff00; /* Bright green background */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #ffff00; /* Bright yellow */
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            border: 5px solid #00aaff; /* Blue border */
+        }
+
+        h1 {
+            color: #ff0000; /* Bright red */
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.8rem;
+            text-shadow: 3px 3px 0 #000; /* Black shadow for contrast */
+            font-weight: bold;
+        }
+
+        .tagline {
+            text-align: center;
+            color: #0000ff; /* Blue */
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #ff00ff; /* Magenta shadow */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            background-color: #ffffff; /* White background for form elements */
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #000000;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ff0000; /* Red */
+            font-size: 18px;
+            text-shadow: 1px 1px 0 #ffff00; /* Yellow shadow */
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid #ff00ff; /* Magenta border */
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #ffffcc; /* Light yellow */
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff0000; /* Red border on focus */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+        }
+
+        .language-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .language-section input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.5);
+            accent-color: #ff00ff; /* Magenta checkbox */
+        }
+
+        .language-labels {
+            display: flex;
+            gap: 20px;
+        }
+
+        .language-labels span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #0000ff; /* Blue */
+        }
+
+        .category-section {
+            margin-bottom: 25px;
+        }
+
+        .category-slider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 12px;
+            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+            border-radius: 10px;
+            outline: none;
+            opacity: 1;
+        }
+
+        .category-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff00ff; /* Magenta */
+            cursor: pointer;
+            border: 3px solid #000000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff00ff; /* Magenta */
+            cursor: pointer;
+            border: 3px solid #000000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .category-labels span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #ff0000; /* Red */
+            text-shadow: 1px 1px 0 #000000;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            background-color: #ffffff;
+            border: 5px solid #000000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border: 3px solid #ff00ff; /* Magenta */
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: #ff00ff; /* Bright pink/magenta */
+            color: white;
+            border: 3px solid #000000;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-size: 20px;
+            text-shadow: 2px 2px 2px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background-color: #ff6600; /* Orange */
+            transform: scale(1.05);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Rainbow button styling */
+        .rainbow-button {
+            background: linear-gradient(to right, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+            animation: rainbow-bg 2s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        #download-btn {
+            background-color: #00cc00; /* Bright green */
+        }
+
+        #download-btn:hover {
+            background-color: #00ff00; /* Lighter green */
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            filter: drop-shadow(1px 1px 0 black);
+        }
+
+        /* Image Upload Styling */
+        .image-uploads-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .image-upload-col {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #000000;
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .upload-btn {
+            background-color: #4361ee;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-btn-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Image preview container */
+        .image-preview {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ff00ff;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-btn {
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        /* Cropper Modal Styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #ffff00;
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 5px solid #ff00ff;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .cropper-container {
+            width: 100%;
+            height: 60vh;
+            margin-bottom: 20px;
+        }
+
+        .cropper-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .button-group, .cropper-controls {
+                flex-direction: column;
+            }
+            
+            button, .preview-controls {
+                width: 100%;
+            }
+
+            .image-uploads-row {
+                flex-direction: column;
+            }
+        }
+
+        /* Add some emoji decorations */
+        .emoji {
+            font-size: 30px;
+            position: absolute;
+        }
+
+        .emoji-tl {
+            top: 10px;
+            left: 10px;
+        }
+
+        .emoji-tr {
+            top: 10px;
+            right: 10px;
+        }
+
+        .emoji-bl {
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .emoji-br {
+            bottom: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Emoji decorations -->
+    <div class="emoji emoji-tl">☀️</div>
+    <div class="emoji emoji-tr">🌞</div>
+    <div class="emoji emoji-bl">☕</div>
+    <div class="emoji emoji-br">🌹</div>
+
+    <div class="container">
+        <h1>Good Morning Image Generator</h1>
+        <p class="tagline">Create Beautiful Morning Messages! 🌄</p>
+        
+        <div class="form-group">
+            <label for="message">Your Morning Message:</label>
+            <input type="text" id="message" placeholder="Type your good morning message or leave empty for a random quote...">
+        </div>
+        
+        <div class="form-group">
+            <label>Language:</label>
+            <div class="language-section">
+                <input type="checkbox" id="lang-toggle">
+                <div class="language-labels">
+                    <span>Urdu 🇵🇰</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group category-section">
+            <label for="category-slider">Message Category:</label>
+            <input type="range" id="category-slider" class="category-slider" min="0" max="2" value="0" step="1">
+            <div class="category-labels">
+                <span>Family 👪</span>
+                <span>Friends 👯</span>
+                <span>Lover ❤️</span>
+            </div>
+        </div>
+
+        <!-- Image Uploaders - Side by side -->
+        <div class="image-uploads-row">
+            <div class="image-upload-col">
+                <label for="sender-upload">Sender Image:</label>
+                <div class="upload-btn-wrapper">
+                    <div class="upload-btn">Choose Sender Photo 📸</div>
+                    <input type="file" id="sender-upload" accept="image/*">
+                </div>
+                <div id="sender-preview" class="image-preview" style="display:none;">
+                    <img id="sender-preview-img" class="preview-img" src="#" alt="Sender Preview">
+                    <div class="preview-controls">
+                        <button id="sender-change-btn" class="preview-btn">Change</button>
+                        <button id="sender-remove-btn" class="preview-btn">Remove</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="image-upload-col">
+                <label for="receiver-upload">Receiver Image:</label>
+                <div class="upload-btn-wrapper">
+                    <div class="upload-btn">Choose Receiver Photo 📸</div>
+                    <input type="file" id="receiver-upload" accept="image/*">
+                </div>
+                <div id="receiver-preview" class="image-preview" style="display:none;">
+                    <img id="receiver-preview-img" class="preview-img" src="#" alt="Receiver Preview">
+                    <div class="preview-controls">
+                        <button id="receiver-change-btn" class="preview-btn">Change</button>
+                        <button id="receiver-remove-btn" class="preview-btn">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="gm-canvas" width="600" height="400"></canvas>
+        </div>
+        
+        <div class="button-group">
+            <button id="generate-btn" class="rainbow-button">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"></circle>
+                    <path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" fill="none"></path>
+                </svg>
+                Create Greeting! 🌅
+            </button>
+            
+            <button id="download-btn">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" fill="none"></path>
+                    <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" fill="none"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" fill="none"></line>
+                </svg>
+                Download! 💝
+            </button>
+        </div>
+    </div>
+
+    <!-- Cropper Modal for Sender -->
+    <div id="sender-cropper-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="text-align: center; margin-bottom: 15px; color: #ff0000; text-shadow: 2px 2px #000;">Crop Sender Image</h2>
+            <div class="cropper-container">
+                <img id="sender-image-to-crop" src="#" alt="Sender Image to Crop">
+            </div>
+            <div class="cropper-controls">
+                <button id="sender-crop-cancel" class="preview-btn">Cancel</button>
+                <button id="sender-crop-confirm" class="preview-btn rainbow-button">Confirm Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cropper Modal for Receiver -->
+    <div id="receiver-cropper-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="text-align: center; margin-bottom: 15px; color: #ff0000; text-shadow: 2px 2px #000;">Crop Receiver Image</h2>
+            <div class="cropper-container">
+                <img id="receiver-image-to-crop" src="#" alt="Receiver Image to Crop">
+            </div>
+            <div class="cropper-controls">
+                <button id="receiver-crop-cancel" class="preview-btn">Cancel</button>
+                <button id="receiver-crop-confirm" class="preview-btn rainbow-button">Confirm Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <!-- Your scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
